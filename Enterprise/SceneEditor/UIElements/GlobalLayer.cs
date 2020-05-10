@@ -16,7 +16,7 @@ namespace LoadScene.SceneEditor.UIElements
             
             this._gauntletLayer = new GauntletLayer(200,"GauntletLayer");
             this.Layer = _gauntletLayer;
-            this._movie = this._gauntletLayer.LoadMovie("ModelTableau", new ItemVM(ItemVM.UsageType.Loot));
+            this._movie = this._gauntletLayer.LoadMovie("ModelTableau", new GameEntityVM());
             
 
 

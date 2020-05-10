@@ -53,18 +53,21 @@
         <Compile Include="SceneEditor\MissionView\CustomMissionView.cs" />
         <Compile Include="SceneEditor\MissionView\EntityInteractions.cs" />
         <Compile Include="SceneEditor\MissionView\MissionScreen.cs" />
+        <Compile Include="SceneEditor\MissionView\VectorHelper.cs" />
         <Compile Include="SceneEditor\ModelTableau\GameEntityVM.cs" />
         <Compile Include="SceneEditor\ModelTableau\ModelTableau.cs" />
         <Compile Include="SceneEditor\ModelTableau\ModelTableauTextureProvider.cs" />
         <Compile Include="SceneEditor\ModelTableau\ModelTableauWidget.cs" />
+        <Compile Include="SceneEditor\ModelTableau\PrefabVM.cs" />
+        <Compile Include="SceneEditor\ModelTableau\XMLParse.cs" />
         <Compile Include="SceneEditor\UIElements\GlobalLayer.cs" />
-        <Compile Include="SceneEditor\UIElements\PrefabVM.cs" />
         <Compile Include="SceneEditor\UIElements\SceneEditorScreen.cs" />
         <Compile Include="Tests\FastLoad.cs" />
         <Compile Include="Tests\test.cs" />
         <Compile Include="UIElements\MarketplaceUI.cs" />
         <Compile Include="UIElements\WorkerOverviewUI.cs" />
         <Compile Include="UIElements\WorkerVM.cs" />
+        <Compile Include="XML.cs" />
     </ItemGroup>
     <ItemGroup>
       <Reference Include="0Harmony_2.0.0.10, Version=2.0.0.10, Culture=neutral, PublicKeyToken=null">
@@ -84,6 +87,10 @@
         <HintPath>..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Mount &amp; Blade II Bannerlord\Modules\SandBox\bin\Win64_Shipping_Client\SandBox.ViewModelCollection.dll</HintPath>
       </Reference>
       <Reference Include="System.Diagnostics.Tracing" />
+      <Reference Include="System.Xml" />
+      <Reference Include="System.Xml.XPath.XmlDocument, Version=4.0.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+        <HintPath>..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Mount &amp; Blade II Bannerlord\bin\Win64_Shipping_Client\System.Xml.XPath.XmlDocument.dll</HintPath>
+      </Reference>
       <Reference Include="TaleWorlds.BattlEye.Client, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null">
         <HintPath>..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Mount &amp; Blade II Bannerlord\bin\Win64_Shipping_Client\TaleWorlds.BattlEye.Client.dll</HintPath>
       </Reference>

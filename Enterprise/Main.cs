@@ -39,7 +39,8 @@ namespace LoadScene
             
             _extender = new UIExtender("ExampleUIMod");
             _extender.Register();
-            
+
+          
             this._editorhandler = new CustomMissionManagerHandler();
             
 
@@ -58,6 +59,8 @@ namespace LoadScene
             {
                 //Set Variable 
                 CampaignGameStarter gameInitializer = (CampaignGameStarter) gameStarterObject;
+               
+
                 
                 
                 //Add and Replace Here 

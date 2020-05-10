@@ -4,7 +4,8 @@ using SandBox;
 using SandBox.Source.Missions;
 using SandBox.Source.Missions.Handlers;
 using SandBox.View.Missions;
-using TaleWorlds.Core;
+ using TaleWorlds.CampaignSystem;
+ using TaleWorlds.Core;
 using TaleWorlds.MountAndBlade;
 using TaleWorlds.MountAndBlade.Source.Missions;
 using TaleWorlds.MountAndBlade.Source.Missions.Handlers;
@@ -24,7 +25,7 @@ namespace LoadScene.SceneEditor
             return  MissionState.OpenNew(
                 "SceneView", new MissionInitializerRecord("empire_village_002"), (Mission missionController) => new MissionBehaviour[]
                 {
-                    
+                    (MissionBehaviour) new MissionAgentHandler(, (string) null),
           
                     
         },true, true,true );

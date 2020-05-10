@@ -333,12 +333,20 @@ using TaleWorlds.Library;
                 frame2.rotation.RotateAboutSide(0.8f);
                 frame2.rotation.RotateAboutForward(0f);
 
+                var center = _model.GlobalBoxMin+ (_model.GlobalBoxMax - _model.GlobalBoxMin) / 2;
+               // var biasedCenter = Vec3.Lerp( center, _model.CenterOfMass, 0.6f);
+                var biasedCenter = center.Z > _model.CenterOfMass.Z
+                    ? Vec3.Lerp(center, _model.CenterOfMass, 0.6f )
+                    : center;
+                var testing = Vec3.Vec3Min(center, _model.CenterOfMass);
                 var distance = (float) ((area / 2) / Math.Tan(fov / 2));
                 
-                var position = _model.GlobalPosition + new Vec3(0,-1f,1.1f) * distance;
+                var position = center + new Vec3(0,-1f,1.0f) * distance;
+
+              
 
                 var frame = MatrixFrame.Identity;
-                _camera.Frame = new MatrixFrame(frame2.rotation,position*1.4f);
+                _camera.Frame = new MatrixFrame(frame2.rotation,position*1f);
                 
 
               

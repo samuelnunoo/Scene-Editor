@@ -12,6 +12,8 @@ namespace LoadScene.SceneEditor
 
         
         ScreenBase GetScreen();
-        
+
+        void PlaceItem(string item);
+
     }
 }

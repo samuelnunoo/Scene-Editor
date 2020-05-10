@@ -1,8 +1,10 @@
-﻿﻿using SandBox;
+﻿﻿using LoadScene.SceneEditor.MissionViews;
+ using SandBox;
 using TaleWorlds.Core;
 using TaleWorlds.Engine.Screens;
+ using TaleWorlds.MountAndBlade;
 
-namespace LoadScene.SceneEditor
+ namespace LoadScene.SceneEditor
 {
     public class CustomMissionManagerHandler : CampaignMissionManager, EditorSceneHandler
     {
@@ -19,6 +21,12 @@ namespace LoadScene.SceneEditor
         {
             return _screen;
         }
-        
+
+
+        void EditorSceneHandler.PlaceItem(string item)
+        {
+            Mission.Current.GetMissionBehaviour<SceneEditorMissionView>().PlaceItem(item);
+            
+        }
     }
 }

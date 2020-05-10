@@ -1,4 +1,4 @@
-﻿﻿using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Threading;
 using LoadScene.SceneEditor.UIElements;
@@ -29,6 +29,8 @@ namespace LoadScene.SceneEditor.MissionViews
         private List<GameEntity> _entities;
         private EditorSceneHandler _handler;
         private testGlobalLayer _testGlobalLayer;
+        private bool _initialset;
+        private bool _boost = false;
         
         public List<GameEntity> GetEntities()
         {
@@ -41,49 +43,104 @@ namespace LoadScene.SceneEditor.MissionViews
 
         private GameEntity _item;
 
-        public override void OnMissionScreenPreLoad()
-        {
-            base.OnMissionScreenPreLoad();
-
-            //Implement Handler and LoadScreen
-            base.OnMissionScreenInitialize();
-            CreateLayout();
-
-
-
-
-
-        }
-
-
+     
+      
+        
         public void MoveItem(GameEntity item)
         {
             Vec2 position = Input.GetMousePositionRanged();
             Vec3 rayBegin;
             Vec3 rayEnd;
-            this.MissionScreen.ScreenPointToWorldRay(position,out  rayBegin, out rayEnd );
+            this.MissionScreen.ScreenPointToWorldRay(position,out  rayBegin, out rayEnd ); //
+            var xy = rayEnd.AsVec2;
+            var terrainHeight = Mission.Scene.GetTerrainHeight(xy);
+            rayEnd = new Vec3(xy, terrainHeight);    
+            item.SetLocalPosition(rayEnd);
             
+            return;
+            GameEntity entity;
+                var rayThickness = 0.01f;
+            var dir = MissionScreen.CombatCamera.Direction;
+            var backupRayEnd = rayEnd;
+            for(;;)
+            {
+                this.Mission.Scene.RayCastForClosestEntityOrTerrain(rayBegin, rayEnd, out var collisionDistance,
+                    out entity);
+                if (entity == null)
+                {
+                    if (float.IsNaN(collisionDistance))
+                    {
+                        // air?
+                        break;
+                    }
+                    // terrain
+                    break;
+                }
+
+                if (float.IsNaN(collisionDistance))
+                {
+                    // not air?
+                    break;
+                }
+
+                if (!rayEnd.IsValid)
+                {
+                    rayEnd = backupRayEnd;
+                    break;
+                }
+                if (!rayBegin.IsValid)
+                {
+                    break;
+                }
+
+                collisionDistance += rayThickness;
+                rayBegin = rayBegin.Project(dir,collisionDistance);
+                rayEnd = rayEnd.Project(dir,collisionDistance);
+            } 
+
+            Debug.Print("Break Here");
+
+            
+            // ray marching;
+            // after this ray cast, if you wish to move through the collision point
+            // you set the rayBegin for the next cast to the rayEnd of the current cast
+            // and increment it by rayThickness (0.01f)
+            // you continue this in a loop to "march" the ray out until you collide with something you want or the rayEnd has travelled far enough away
+            
+            //Normalize()
             item.SetLocalPosition(rayEnd);
         }
 
-        public void PlaceItem()
+        public void PlaceItem(string item)
         {
             
             Vec2 position = Input.GetMousePositionRanged();
             Vec3 rayBegin;
             Vec3 rayEnd;
             this.MissionScreen.ScreenPointToWorldRay(position,out  rayBegin, out rayEnd );
-            
             Mat3 rotation = Mat3.Identity;
+            this._initialset = true;
+            
             
             
             MatrixFrame frame = new MatrixFrame(rotation,rayEnd);
-            GameEntity.Instantiate(Mission.Current.Scene, "sturgia_house_a", frame);
+            var entity = GameEntity.Instantiate(Mission.Current.Scene,item, frame);
+            _item = entity;
         }
-        public void RotateItem(GameEntity item)
+        public void RotateHorizontal(GameEntity item,bool left)
         {
+            var degree = 0.01f;
+            if (!left)
+            {
+                degree *= -1;
+            }
+            if (_boost)
+            {
+                degree *= 1.4f;
+            }
+            
             Mat3 rotation = item.GetFrame().rotation;
-            rotation.RotateAboutSide(0.01f);
+            rotation.RotateAboutSide(degree);
             Vec3 position = item.GetFrame().origin;
             MatrixFrame frame = new MatrixFrame(rotation,position);
             
@@ -93,10 +150,20 @@ namespace LoadScene.SceneEditor.MissionViews
 
         }
 
-        public void RotateUp(GameEntity item)
+        public void RotateVertical(GameEntity item, bool up)
         {
+            var degree = 0.1f;
+            if (!up)
+            {
+                degree *= -1;
+            }
+
+            if (_boost)
+            {
+                degree *= 1.4f;
+            }
             Mat3 rotation = item.GetFrame().rotation;
-            rotation.RotateAboutUp(0.01f);
+            rotation.RotateAboutUp(degree);
             Vec3 position = item.GetFrame().origin;
             MatrixFrame frame = new MatrixFrame(rotation,position);
             
@@ -104,9 +171,11 @@ namespace LoadScene.SceneEditor.MissionViews
             item.SetFrame(ref frame);
             
         }
+        
+        
         public void EntityInteractionsTick()
         {
-            if (Input.IsKeyDown(InputKey.LeftMouseButton))
+            if (Input.IsKeyDown(InputKey.LeftMouseButton) || _initialset == true)
             {
 
                 if (_item == null)
@@ -115,17 +184,34 @@ namespace LoadScene.SceneEditor.MissionViews
                     _item = GetCollidedEntity();
 
                 }
-                if (_item != null && !Input.IsKeyReleased(InputKey.LeftMouseButton))
+                if (_item != null && !Input.IsKeyReleased(InputKey.LeftMouseButton) ||  _item!= null && _initialset ==true)
                 {
                     MoveItem(_item);
                     if (Input.IsKeyDown(InputKey.Q) && _item!=null)
                     {
-                        RotateUp(_item);
+                        RotateVertical(_item,true);
                     }
                     if (Input.IsKeyDown(InputKey.E) && _item!=null)
                     {
-                        RotateItem(_item);
+                        RotateVertical(_item,false);
                     }
+                    if (Input.IsKeyDown(InputKey.R) && _item!=null)
+                    {
+                        RotateHorizontal(_item,true);
+                    }
+                    if (Input.IsKeyDown(InputKey.T) && _item!=null)
+                    {
+                        RotateHorizontal(_item,false);
+                    }
+                    if (Input.IsKeyDown(InputKey.LeftShift) && _item!=null)
+                    {
+                        _boost = true;
+                    }
+                    if (Input.IsKeyReleased(InputKey.LeftShift) && _item!=null)
+                    {
+                        _boost = false;
+                    }
+                    
                     
                     
                 }
@@ -133,27 +219,20 @@ namespace LoadScene.SceneEditor.MissionViews
             }
 
 
-            if (Input.IsKeyReleased(InputKey.LeftMouseButton))
+            if (Input.IsKeyReleased(InputKey.LeftMouseButton) && _initialset ==false)
             {
                 _item = null; 
             }
 
-            if (Input.IsKeyPressed(InputKey.Q) && !Input.IsKeyDown(InputKey.LeftMouseButton))
+            if (Input.IsKeyPressed(InputKey.LeftMouseButton) && _initialset == true)
             {
-                PlaceItem();
-                
+                _initialset = false;
             }
+
+           
           
         }
-        public void CreateLayout()
-        {
-            //Template 
-            this._testGlobalLayer = new testGlobalLayer();
-            this._testGlobalLayer.Initialize();
-            ScreenManager.AddGlobalLayer(this._testGlobalLayer, true);
-            
-
-        }
+        
         
  
         
