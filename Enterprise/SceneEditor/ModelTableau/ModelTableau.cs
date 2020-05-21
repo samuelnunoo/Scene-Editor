@@ -58,6 +58,9 @@ using TaleWorlds.Library;
         
         
         //Functions 
+        
+        
+        //Set Model
 
         public void SetGameModelID(string id)
         {
@@ -74,31 +77,44 @@ using TaleWorlds.Library;
       this.RefreshModelTableau();
         
         //Camera Updates 
+        if (_camera == null)
+            return;
+        
         if ((NativeObject) this._model != (NativeObject) null)
         {
-            float num1 = Screen.RealScreenResolutionWidth / (float) this._tableauSizeX;
-            float num2 = Screen.RealScreenResolutionHeight / (float) this._tableauSizeY;
-            float num3 = (double) num1 > (double) num2 ? num1 : num2;
-            if ((double) num3< 1.0)
-            {
-                Vec3 globalBoxMax = this._model.GlobalBoxMax;
-                Vec3 globalBoxMin = this._model.GlobalBoxMin;
-                this._modelFrame = this._model.GetFrame();
-                float length = this._modelFrame.rotation.f.Length;
-                this._modelFrame.rotation.Orthonormalize();
-                this._modelFrame.rotation.ApplyScaleLocal(length * num3);
-                this._model.SetFrame(ref this._modelFrame);
-                if (globalBoxMax.NearlyEquals(this._model.GlobalBoxMax, 1E-05f) && globalBoxMin.NearlyEquals(this._model.GlobalBoxMin, 1E-05f))
-                {
-                    this._model.SetBoundingboxDirty();
-                    this._model.RecomputeBoundingBox();
-                }
-                this._modelFrame.origin += (globalBoxMax + globalBoxMin - this._model.GlobalBoxMax - this._model.GlobalBoxMin) * 0.5f;
-                this._model.SetFrame(ref this._modelFrame);
-                this._midPoint = (this._model.GlobalBoxMax + this._model.GlobalBoxMin) * 0.5f + (globalBoxMax + globalBoxMin - this._model.GlobalBoxMax - this._model.GlobalBoxMin) * 0.5f;
-            }
-            else
-                this._midPoint = (this._model.GlobalBoxMax + this._model.GlobalBoxMin) * 0.5f;
+            
+            //Bounding Box
+            var width = _model.GlobalBoxMax.X - _model.GlobalBoxMin.X;
+            var height = _model.GlobalBoxMax.Y - _model.GlobalBoxMin.Y;
+            var length = _model.GlobalBoxMax.Z - _model.GlobalBoxMin.Z;
+
+            var frame2 = MatrixFrame.Identity;
+                
+            //Iitial Position
+                
+                
+            var area = Math.Max(Math.Max(width, height), length);
+         
+            var fov = _camera.GetFovHorizontal();
+
+            frame2.rotation.RotateAboutSide(0.8f);
+            frame2.rotation.RotateAboutForward(0f);
+
+            var center = _model.GlobalBoxMin+ (_model.GlobalBoxMax - _model.GlobalBoxMin) / 2;
+            // var biasedCenter = Vec3.Lerp( center, _model.CenterOfMass, 0.6f);
+            var biasedCenter = center.Z > _model.CenterOfMass.Z
+                ? Vec3.Lerp(center, _model.CenterOfMass, 0.6f )
+                : center;
+            var testing = Vec3.Vec3Min(center, _model.CenterOfMass);
+            var distance = (float) ((area / 2) / Math.Tan(fov / 2));
+                
+            var position = center + new Vec3(0,-1f,1.0f) * distance;
+
+              
+
+            var frame = MatrixFrame.Identity;
+            _camera.Frame = new MatrixFrame(frame2.rotation,position*1f);
+
          
             this.ResetCamera();
         }
@@ -109,7 +125,7 @@ using TaleWorlds.Library;
     }
          
          
-         //Functions Oteher
+         //Functions Main
          
         public void Initialize()
         {
@@ -144,9 +160,13 @@ using TaleWorlds.Library;
                 this._model.Remove();
                 this._model = (GameEntity) null;
             }
-            
 
-            this._model = GameEntity.Instantiate(this._tableauScene, _stringId, MatrixFrame.Identity);
+
+            var frame = MatrixFrame.Identity;
+            this._model = GameEntity.Instantiate(this._tableauScene, _stringId, false);
+            this._model.SetFrame(ref frame);
+            foreach ( var sc in _model.GetScriptComponents())
+                _model.RemoveScriptComponent(sc.ScriptComponent.RefPointer());
             
 
        
@@ -313,47 +333,53 @@ using TaleWorlds.Library;
             this._curZoomSpeed -= (float) (value / 1000.0);
         }
 
-  
+        //Tick
         public void OnTick(float dt)
-        {
-            try
-            {
-                var width = _model.GlobalBoxMax.X - _model.GlobalBoxMin.X;
-                var height = _model.GlobalBoxMax.Y - _model.GlobalBoxMin.Y;
-                var length = _model.GlobalBoxMax.Z - _model.GlobalBoxMin.Z;
-
-                var frame2 = MatrixFrame.Identity;
-                
-                //Iitial Position
-                
-                
-                var area = Math.Max(Math.Max(width, height), length);
-                var fov = _camera.GetFovHorizontal();
-
-                frame2.rotation.RotateAboutSide(0.8f);
-                frame2.rotation.RotateAboutForward(0f);
-
-                var center = _model.GlobalBoxMin+ (_model.GlobalBoxMax - _model.GlobalBoxMin) / 2;
-               // var biasedCenter = Vec3.Lerp( center, _model.CenterOfMass, 0.6f);
-                var biasedCenter = center.Z > _model.CenterOfMass.Z
-                    ? Vec3.Lerp(center, _model.CenterOfMass, 0.6f )
-                    : center;
-                var testing = Vec3.Vec3Min(center, _model.CenterOfMass);
-                var distance = (float) ((area / 2) / Math.Tan(fov / 2));
-                
-                var position = center + new Vec3(0,-1f,1.0f) * distance;
-
-              
-
-                var frame = MatrixFrame.Identity;
-                _camera.Frame = new MatrixFrame(frame2.rotation,position*1f);
-                
-
-              
-                
-        
-                
-            }
+        {  try
+                     {
+                         var width = _model.GlobalBoxMax.X - _model.GlobalBoxMin.X;
+                         var height = _model.GlobalBoxMax.Y - _model.GlobalBoxMin.Y;
+                         var length = _model.GlobalBoxMax.Z - _model.GlobalBoxMin.Z;
+         
+                         var frame2 = MatrixFrame.Identity;
+                         
+                         //Iitial Position
+                         
+                         
+                         var area = Math.Max(Math.Max(width, height), length);
+                         if (_camera == null)
+                         {  
+                           this._camera = Camera.CreateCamera();
+                           this._camera.SetViewVolume(true, -0.5f, 0.5f, -0.5f, 0.5f, 0.01f, 100f);
+                           this.ResetCamera();
+                         }
+                         var fov = _camera.GetFovHorizontal();
+         
+                         frame2.rotation.RotateAboutSide(0.8f);
+                         frame2.rotation.RotateAboutForward(0f);
+         
+                         var center = _model.GlobalBoxMin+ (_model.GlobalBoxMax - _model.GlobalBoxMin) / 2;
+                        // var biasedCenter = Vec3.Lerp( center, _model.CenterOfMass, 0.6f);
+                         var biasedCenter = center.Z > _model.CenterOfMass.Z
+                             ? Vec3.Lerp(center, _model.CenterOfMass, 0.6f )
+                             : center;
+                         var testing = Vec3.Vec3Min(center, _model.CenterOfMass);
+                         var distance = (float) ((area / 2) / Math.Tan(fov / 2));
+                         
+                         var position = center + new Vec3(0,-1f,1.0f) * distance;
+         
+                       
+         
+                         var frame = MatrixFrame.Identity;
+                         _camera.Frame = new MatrixFrame(frame2.rotation,position*1f);
+                         
+         
+                       
+                         
+                 
+                         
+                     }
+          
             catch
             {
                 

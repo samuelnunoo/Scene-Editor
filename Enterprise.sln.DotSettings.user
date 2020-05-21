@@ -114,4 +114,6 @@
   &lt;Assembly Path="C:\Program Files (x86)\Steam\steamapps\common\Mount &amp;amp; Blade II Bannerlord\Modules\ExampleUIMod\bin\Win64_Shipping_Client\UIExtenderLib_2.0.0.1.dll" /&gt;&#xD;
   &lt;Assembly Path="C:\Program Files (x86)\Steam\steamapps\common\Mount &amp;amp; Blade II Bannerlord\Modules\ExampleUIMod\bin\Win64_Shipping_Client\0Harmony.dll" /&gt;&#xD;
   &lt;Assembly Path="C:\Program Files\dotnet\shared\Microsoft.NETCore.App\2.1.15\System.Xml.XDocument.dll" /&gt;&#xD;
+  &lt;Assembly Path="C:\Users\Samuel\RiderProjects\Enterprise\packages\UIExtenderLib.2.0.0.3\lib\net472\0Harmony_2.0.0.10.dll" /&gt;&#xD;
+  &lt;Assembly Path="C:\Program Files (x86)\Steam\steamapps\common\Mount &amp;amp; Blade II Bannerlord\bin\Win64_Shipping_Client\TaleWorlds.GauntletUI.dll" /&gt;&#xD;
 &lt;/AssemblyExplorer&gt;</s:String></wpf:ResourceDictionary>

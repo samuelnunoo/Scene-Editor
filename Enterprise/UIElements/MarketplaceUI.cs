@@ -43,7 +43,7 @@ namespace LoadScene.UIElements
             this.AddLayer((ScreenLayer) this._gauntletLayer);
             
             this._dataSource = new MarketplaceVM();
-            this._gauntletLayer.LoadMovie("ModelTableau", this._dataSource);
+            this._gauntletLayer.LoadMovie("Crafting", this._dataSource);
 
         }
         

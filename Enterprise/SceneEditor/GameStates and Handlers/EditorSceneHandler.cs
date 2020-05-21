@@ -1,4 +1,5 @@
-﻿﻿using TaleWorlds.Core;
+﻿﻿using TaleWorlds.CampaignSystem;
+ using TaleWorlds.Core;
 using TaleWorlds.Engine.Screens;
 
 namespace LoadScene.SceneEditor

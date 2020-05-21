@@ -16,6 +16,7 @@
               this.TextureProviderName = "ModelTableauTextureProvider";
           }
           
+          
           [Editor(false)]
           public string GameModelID
           {

@@ -117,9 +117,15 @@ namespace LoadScene
                 // Load Scene 
                 if (Input.IsKeyPressed(InputKey.F10))
                 {
-                     this._editorhandler.LoadSceneEditor();
+                
+                    this._editorhandler.LoadSceneEditor();
              
 
+                }
+
+                if (Input.IsKeyPressed(InputKey.F11))
+                {
+          
                 }
 
                 
@@ -132,7 +138,6 @@ namespace LoadScene
                     //Place Item
                     if (Input.IsKeyPressed((InputKey.F9)))
                     {
-                        this.PlaceItem();
                         
                     }
 

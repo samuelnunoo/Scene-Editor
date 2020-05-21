@@ -1,6 +1,7 @@
 ﻿﻿using LoadScene.SceneEditor.MissionViews;
  using SandBox;
-using TaleWorlds.Core;
+ using TaleWorlds.CampaignSystem;
+ using TaleWorlds.Core;
 using TaleWorlds.Engine.Screens;
  using TaleWorlds.MountAndBlade;
 
@@ -9,8 +10,10 @@ using TaleWorlds.Engine.Screens;
     public class CustomMissionManagerHandler : CampaignMissionManager, EditorSceneHandler
     {
         private ScreenBase _screen;
-        
-        IMission EditorSceneHandler.LoadSceneEditor() { return CustomMissionManager.OpenSceneEditor(); }
+
+        IMission EditorSceneHandler.LoadSceneEditor()
+        {
+            return CustomMissionManager.OpenSceneEditor();  }
       
         void EditorSceneHandler.LoadScreen() { 
             Game.Current.GameStateManager.CleanAndPushState((GameState) Game.Current.GameStateManager.CreateState<CustomEditorState>(), 0);

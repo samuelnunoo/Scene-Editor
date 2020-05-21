@@ -23,10 +23,9 @@ namespace LoadScene.SceneEditor
         public static Mission OpenSceneEditor()
         {
             return  MissionState.OpenNew(
-                "SceneView", new MissionInitializerRecord("empire_village_002"), (Mission missionController) => new MissionBehaviour[]
+                "SceneView", new MissionInitializerRecord("scene_editor_scene"), (Mission missionController) => new MissionBehaviour[]
                 {
-                    (MissionBehaviour) new MissionAgentHandler(, (string) null),
-          
+                  
                     
         },true, true,true );
         }
